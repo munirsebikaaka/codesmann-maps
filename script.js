@@ -21,6 +21,7 @@ class Workout {
   }
 }
 class Running extends Workout {
+  activities = [];
   constructor(coord, distance, duration, cadence) {
     super(coord, distance, duration);
     this.cadence = cadence;
@@ -45,6 +46,7 @@ class Cycling extends Workout {
 class App {
   #map;
   #mapEvent;
+  #workouts = [];
   constructor() {
     this.getPosition();
     form.addEventListener('submit', this.newWorkout.bind(this));
@@ -87,7 +89,44 @@ class App {
     inputCadence.closest('.form__row').classList.toggle('form__row--hidden');
   }
   newWorkout(e) {
+    const validInputs = (...inputs) =>
+      inputs.every(inp => Number.isFinite(inp));
+    const allPositive = (...inputs) => inputs.every(input => input > 0);
     e.preventDefault();
+    // get data from form
+    const type = inputType.value;
+    const distance = +inputDistance.value;
+    const duration = +inputDuration.value;
+    let workout;
+    // if workout Running create a running object
+    if (type === 'running') {
+      const cadence = +inputCadence.value;
+      // check if data  is valid
+      if (
+        // !Number.isFinite(distance) ||
+        // !Number.isFinite(duration) ||
+        // !Number.isFinite(cadence)
+        !validInputs(distance, duration, cadence) ||
+        !allPositive(distance, duration, cadence)
+      )
+        return alert('inputs have to be positive numbers');
+      workout = new Running([lat, lng], distance, duration, cadence);
+    }
+    // if workout recycling create a recycling object
+    if (type === 'cycling') {
+      const elevetion = +inputElevation.value;
+      if (
+        !validInputs(distance, duration, elevetion) ||
+        !allPositive(distance, duration)
+      )
+        return alert('inputs have to be positive numbers');
+      workout = new Cycling([lat, lng], distance, duration, elevetion);
+    }
+    //add new object to workout array
+    this.#workouts.push(workout);
+    console.log(workout);
+
+    //render the workout on the map maker
     inputCadence.value =
       inputDuration.value =
       inputDistance.value =
