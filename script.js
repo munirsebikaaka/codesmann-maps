@@ -150,9 +150,14 @@ class App {
 
     //render workout on the map as a maker
     this._renderWorkOutMarker(workout);
+
     this._renderWorkOut(workout);
     //clear form and input fields
 
+    //set local storage
+    this._setLocalStorage();
+
+    //hide form
     this._hideForm();
   }
   _renderWorkOutMarker(workout) {
@@ -240,6 +245,9 @@ class App {
         duration: 1,
       },
     });
+  }
+  _setLocalStorage() {
+    localStorage.getItem('workouts', JSON.stringify(this.#workout));
   }
 }
 const app = new App();
